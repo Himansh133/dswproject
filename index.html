@@ -1,61 +1,142 @@
 <!DOCTYPE html>
 
 <html lang="en">
-  
-  <head>
 
-    <meta charset="UTF-8">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Using PHP And MySQL</title>
+  <link rel="stylesheet" href="styles/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    .top-bar {
+      background-color: #4caf50;
+      padding: 10px 20px;
+      color: white;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-    <title>Blog Using PHP And MySQL</title>
+    .writing-section {
+      margin: 20px auto;
+      width: 70%;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-    <link rel="stylesheet" href="styles/style.css">
+    .writing-section input[type="text"],
+    .writing-section input[type="date"],
+    .writing-section textarea,
+    .writing-section input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
 
-  </head>
+    .writing-section textarea {
+      resize: none;
+    }
 
-  <body>
+    #saveBtn {
+      display: inline-block;
+      background-color: #4caf50;
+      color: white;
+      font-size: 16px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
 
-    <div class="top-bar">
-  
-      <span id="topBarTitle">Blog | New Post</span>
+    #saveBtn:hover {
+      background-color: #45a049;
+    }
 
-    </div>
+    a#saveBtn {
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+    }
 
-    <div class="writing-section">
+    #dateLabel {
+      font-weight: bold;
+      font-size: 14px;
+    }
 
-      <form action="blog_post_process.php" method="POST" enctype="multipart/form-data">
+    input[readonly] {
+      background-color: #f9f9f9;
+      cursor: not-allowed;
+    }
 
-        <input id="blogTitle" name="blogtitle" type="text" placeholder="Blog Title..." autocomplete="off">
-        
-        <br>
-        
-        <span id="dateLabel">Date: </span>
-        
-        <input id="blogDate" name="blogdate" readonly></input>
-        
-        <br><br>
-        
-        <input type="file" name="uploadimage">
-        
-        <br><br>
-      
-        <textarea id="blogPara" name="blogpara" cols="75" rows="10" type="text" placeholder="Blog Paragraph..." autocomplete="off"></textarea>
+    @media (max-width: 768px) {
+      .writing-section {
+        width: 90%;
+        padding: 15px;
+      }
 
-        <br><br>
-        
-        <button id="saveBtn" type="submit">Save Post</button>
+      #saveBtn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
 
-      </form>
+<body>
+
+  <div class="top-bar">
+    <span id="topBarTitle">Blog | New Post</span>
+  </div>
+
+  <div class="writing-section">
+    <form action="blog_post_process.php" method="POST" enctype="multipart/form-data">
+
+      <input id="blogTitle" name="blogtitle" type="text" placeholder="Blog Title..." autocomplete="off">
 
       <br>
 
-      <center><a style="text-decoration: none;" href="index.php" id="saveBtn">Go to Home Page</a></center>
-      
-    </div>
+      <span id="dateLabel">Date: </span>
 
-    <script src="scripts/script.js"></script>
+      <input id="blogDate" name="blogdate" readonly></input>
 
-  </body>
-  
+      <br><br>
+
+      <input type="file" name="uploadimage">
+
+      <br><br>
+
+      <textarea id="blogPara" name="blogpara" cols="75" rows="10" type="text" placeholder="Blog Paragraph..."
+        autocomplete="off"></textarea>
+
+      <br><br>
+
+      <button id="saveBtn" type="submit">Save Post</button>
+
+    </form>
+
+    <br>
+
+    <center><a style="text-decoration: none;" href="index.php" id="saveBtn">View Saved Blogs</a></center>
+
+  </div>
+
+  <script src="scripts/script.js"></script>
+
+</body>
+
 </html>

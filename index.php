@@ -1,82 +1,189 @@
 <!DOCTYPE html>
 
 <html lang="en">
-  
-  <head>
 
-    <meta charset="UTF-8">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Using PHP And MySQL</title>
+  <link rel="stylesheet" href="styles/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    .top-bar {
+      background-color: #4caf50;
+      padding: 10px 20px;
+      color: white;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-    <title>Blog Using PHP And MySQL</title>
+    .all-posts-container {
+      margin: 20px auto;
+      width: 80%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
 
-    <link rel="stylesheet" href="styles/style.css">
+    .post-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
 
-  </head>
+    .post-container:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    }
 
-  <body>
+    .post-container.expanded {
+      grid-column: span 2;
+      padding: 30px;
+      height: 500px;
+      width: 500px;
+    }
 
-    <div class="top-bar">
+    #displayTitle {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+      overflow-y: auto;
+    }
 
-      <span id="topBarTitle">Blog | All Posts</span>
+    #displayDate {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 15px;
+    }
 
-    </div>
+    #displayImage {
+      /* margin-left: 20%; */
+      width: 100%;
+      height: auto;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      max-height: 200px;
+      max-width: 200px;
+    }
+    #displayPara {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+  text-align: justify;
+  margin-bottom: 10px;
+  overflow: hidden; /* Hide overflow initially */
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* Limit to 5 lines */
+  line-clamp: 5;
+  -webkit-box-orient: vertical;
+  max-height: 120px; /* Define height for 5 lines */
+}
 
-    <br>
+.expanded #displayPara {
+  overflow-y: auto; /* Enable scrolling */
+  -webkit-line-clamp: unset; /* Remove line clamping */
+  line-clamp: unset; /* Support for other browsers */
+  max-height: 300px; /* Set a larger max height for scrolling */
+ 
+}
 
-    <div class="all-posts-container">
 
-      <?php
+    .write-post-button {
+      display: inline-block;
+      text-align: center;
+      background-color: #4caf50;
+      color: white;
+      font-size: 16px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-      $servername = "localhost";
+    .write-post-button:hover {
+      background-color: #45a049;
+    }
 
-      $username = "root";
-
-      $password = "";
-
-      $database = "blog_db";
-
-      $conn = new mysqli($servername, $username, $password, $database);
-
-      if($conn->connect_error) die("Connection Error" . $conn->connect_error);
-
-      $sql = "select topic_title, topic_date, image_filename, topic_para from blog_table;";
-
-      $result = $conn->query($sql);
-
-      if($result->num_rows > 0)
-      {
-        while($row = $result->fetch_assoc())
-        {
-          echo "<div style='padding: 25px 25px;' class='post-container'>";
-
-          echo "<span id='displayTitle'>" . $row["topic_title"] . "</span><br>";
-
-          echo "<span id='displayDate'>" . $row["topic_date"] . "</span><br><br>";
-
-          echo "<img style='width: 100%; height: auto' id='displayImage' src='images/" . $row["image_filename"] . "'><br>"; 
-
-          echo "<p style='overflow: hidden; display: -webkit-box; -webkit-line-clamp: 10; line-clamp: 10; -webkit-box-orient: vertical;' id='displayPara'>" . $row["topic_para"] . "</p><br>";
-          
-          echo "</div>";
-        }
+    @media (max-width: 768px) {
+      .all-posts-container {
+        width: 90%;
       }
-      
-      else
-      {
-        echo "<center><span>No Blog Posts Found</span></center>";
-      
-        // echo "<center><a style='color: dodgerblue;' href='index.html'>Write a New Post</a></center>";
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-bar">
+    <span id="topBarTitle">Blog | All Posts</span>
+  </div>
+
+  <br>
+
+  <div class="all-posts-container">
+
+    <?php
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $database = "blog_db";
+
+    $conn = new mysqli($servername, $username, $password, $database);
+
+    if ($conn->connect_error) die("Connection Error" . $conn->connect_error);
+
+    $sql = "select topic_title, topic_date, image_filename, topic_para from blog_table;";
+
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+        echo "<div class='post-container' onclick='expandPost(this)'>";
+
+        echo "<span id='displayTitle'>" . $row["topic_title"] . "</span>";
+        echo "<span id='displayDate'>" . $row["topic_date"] . "</span>";
+        echo "<img id='displayImage' src='images/" . $row["image_filename"] . "'>";
+        echo "<p id='displayPara'>" . $row["topic_para"] . "</p>";
+
+        echo "</div>";
       }
+    } else {
+      echo "<center><span>No Blog Posts Found</span></center>";
+    }
 
-      $conn->close();
-      
-      ?>
+    $conn->close();
+    ?>
 
-    </div>
+  </div>
 
-    <?php echo "<br><center><a style='color: dodgerblue; text-decoration: none; background: dodgerblue; padding: 5px 25px; color: #fff; border-radius: 50px;' href='index.html'>Write a New Post</a></center><br>"; ?>
+  <br>
+  <center>
+    <a href="index.html" class="write-post-button">Write a New Post</a>
+  </center>
+  <br>
 
-  </body>
-  
+  <script>
+    function expandPost(post) {
+      post.classList.toggle('expanded');
+    }
+  </script>
+</body>
+
 </html>

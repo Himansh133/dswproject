@@ -1,95 +1,114 @@
 <?php
-
-// error_reporting(0);
-
+// Database connection details
 $servername = "localhost";
-
 $username = "root";
-
 $password = "";
+$database = "blog_db";
 
-$database = "blog_db"; 
-
+// Form data
 $blogTitle = $_POST["blogtitle"];
-
 $blogDate = $_POST["blogdate"];
-
 $blogPara = $_POST["blogpara"];
 
-// $sql = "insert into blog_table (topic_title, topic_date, image_filename, topic_para) values ('" . $blogTitle . "', '" . $blogDate . "', '" . $filename . "', '" . $blogPara . "');";
-
+// Database connection
 $conn = new mysqli($servername, $username, $password, $database);
 
-if($conn->connect_error) die("Connection to database failed") . $conn->connect->error;
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
+// Default filename if no file is uploaded
 $filename = "NONE";
 
-if(isset($_FILES['uploadimage']))
-{
-  $GLOBALS['filename'] = $_FILES['uploadimage']['name'];
-  
-  $tempname = $_FILES['uploadimage']['tmp_name'];
-  
-  move_uploaded_file($tempname, "images/" . $GLOBALS['filename']);
+// Handle file upload
+if (isset($_FILES['uploadimage']) && $_FILES['uploadimage']['error'] === UPLOAD_ERR_OK) {
+    $filename = $_FILES['uploadimage']['name'];
+    $tempname = $_FILES['uploadimage']['tmp_name'];
+
+    // Ensure images folder exists
+    if (!file_exists('images')) {
+        mkdir('images', 0777, true);
+    }
+
+    // Move uploaded file to the images directory
+    if (move_uploaded_file($tempname, "images/" . $filename)) {
+        // echo "Image uploaded successfully.<br>";
+    } else {
+        echo "Failed to upload image.<br>";
+    }
+} else {
+    echo "No image uploaded or an error occurred.<br>";
 }
 
-$sql = "insert into blog_table (topic_title, topic_date, image_filename, topic_para) values ('" . $blogTitle . "', '" . $blogDate . "', '" . $filename . "', '" . $blogPara . "');";
+// Insert data into database
+$sql = "INSERT INTO blog_table (topic_title, topic_date, image_filename, topic_para) 
+        VALUES ('$blogTitle', '$blogDate', '$filename', '$blogPara')";
 
-if($conn->query($sql) === TRUE)
-{
-  echo "";
+if ($conn->query($sql) === TRUE) {
+    // echo "Post saved successfully.<br>";
+} else {
+    echo "Error saving post: " . $conn->error;
 }
 
-else
-{
-  echo "Error Saving Post";
-}
-
+// Close connection
 $conn->close();
-
 ?>
 
 <!DOCTYPE html>
-
 <html lang="en">
-
-  <head>
-
+<head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Post Saved</title>
-
-    <link rel="stylesheet" href="styles/style.css">
-
-  </head>
-
-  <body>
-
-    <div class="container" style="width: 50%; margin: auto; text-align: justify; font-family: Roboto, sans-serif;">
-
-      <h1 style="margin-bottom: 10px; text-align: center;">Post Saved</h1>
-
-      <center><a style="color: dodgerblue;" href="index.php">Go to Home Page</a></center>
-      
-      <br><br>
-
-      <?php echo "<span style='font-weight: bold;' id='showTitle'>" . $blogTitle . "</span>" ?>
-      <br>
-
-      <span id="showDate"><?php echo $blogDate ?></span><br><br>
-
-      <center><img src="images/<?php echo $filename; ?>" id="showImage" style="width: 50%; height: auto;"></center>
-
-      <br>
-
-      <?php echo "<span id='showPara'>" . $blogPara . "</span>" ?>
-
-      <br><br>
-      
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            width: 60%;
+            margin: auto;
+            text-align: left;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .container h1 {
+            text-align: center;
+        }
+        .container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+            background-color: dodgerblue;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Post Saved</h1>
+        <p><strong>Title:</strong> <?php echo htmlspecialchars($blogTitle); ?></p>
+        <p><strong>Date:</strong> <?php echo htmlspecialchars($blogDate); ?></p>
+        <?php if ($filename !== "NONE") : ?>
+            <img src="images/<?php echo htmlspecialchars($filename); ?>" alt="Blog Image">
+        <?php else : ?>
+            <p>No image uploaded.</p>
+        <?php endif; ?>
+        <p><strong>Content:</strong> <?php echo nl2br(htmlspecialchars($blogPara)); ?></p>
+        <br>
+        <a href="index.html">Go to Home Page</a>
     </div>
 
-  </body>
-  
+ 
+</body>
 </html>
